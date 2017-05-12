@@ -44,17 +44,16 @@ function parseLength (length) {
 
 function parseAngle (ang) {
 	
-	return ang / 180;
+	return (ang / 180) * Math.PI;
 }
 
 function buildCartridge(d,l,a){
 
 	[hD, eD, sD, nD] = d.map(parseLength).map((i)=> i/2);
 	[hL, rL, eL, cL] = l.map(parseLength);
-	[rA, eA] = a.map(parseLength).map(parseAngle).map((i) => i*Math.PI);
-	console.log('hD: ', hD)
-	return buildHead(hL,hD,rL,rA);
+	[rA, eA] = a.map(parseLength).map(parseAngle);
 
+	return buildHead(hL,hD,rL,rA);
 }
 
 function buildHead(hl,hd,rl,ra) {
@@ -89,10 +88,19 @@ let round = d3.select('.cartridge')
 			  .append('svg')
 			  .attr('height', height)
 			  .attr('width', width)
-			  .append('path');
+			  .append('path')
+			  .attr('class', 'round1');
+
+let round2 = d3.select('svg')
+			  .append('path')
+			  .attr('class', 'round2')
+			  .attr("transform","translate(0 "+ hD*20 +") scale(1 -1)");
 
 let lineGenerator = d3.line();
 let pathString = lineGenerator(data);
 
-d3.select('path')
+d3.select('.round1')
+	.attr('d', pathString);
+
+d3.select('.round2')
 	.attr('d', pathString);
