@@ -7,11 +7,12 @@ let hD = '10.01-0.25',
 let rA = '35+20',
 	rL = '0.89-0.25';
 
-let eA = '35-10',
+let eA = '35',
 	eL = '0.89-0.25',
 	eD = '8.81-0.51';
 
 let bD = '9.931';
+let bL = '5.08'
 
 let sD = '9.680';
 
@@ -19,13 +20,12 @@ let nD = '9.652';
 
 let cL = '19.15-0.25';
 
-let diameters = [hD, eD, sD, nD];
+let diameters = [hD, eD, bD, sD, nD];
 
 let lengths = [hL, rL, eL, cL];
 
 let angles = [rA, eA];
 
-//console.log(foo);
 function parseLength (length) {
 	let range;
 	let value;
@@ -47,42 +47,49 @@ function parseAngle (ang) {
 	return (ang / 180) * Math.PI;
 }
 
-function buildCartridge(d,l,a){
-
-	[hD, eD, sD, nD] = d.map(parseLength).map((i)=> i/2);
+function buildCartridge(d,l,a) {
+	[hD, eD, bD, sD, nD] = d.map(parseLength).map((i)=> i/2);
 	[hL, rL, eL, cL] = l.map(parseLength);
 	[rA, eA] = a.map(parseLength).map(parseAngle);
 
-	return buildHead(hL,hD,rL,rA);
+	return buildHead(hL,hD,rL,rA,eD,eL,bD,eA);
 }
 
-function buildHead(hl,hd,rl,ra) {
-	let rValue = rimAngle(hl, rl, ra);
-	console.log('hl-rl: ', hl-rl);
+function buildHead(hl,hd,rl,ra,ed,el,bd,ea) {
+
+	let rimAngle = calcRimAngle(hl, rl, ra);
+	let ejecAngle = calcEjecAngle(bd, ed, ea);
+
  return [
- 		 [hl*10, hd*10],
- 		 [hl*10,2], 
- 		 [(hl-rl)*10,2], 
- 		 [2, rValue*10], 
- 		 [2, hd*10]
+ 			[2, bd*10], // rim start
+ 			[2, rimAngle*10],
+ 			[(hl-rl)*10,2],
+ 			[(hl-rl)*10,bd*10],
+ 			[(hl-rl)*10,2],
+ 			[hl*10,2],
+ 			[hl*10, bd*10],
+ 			[hl*10, (bd-ed)*10], // extractor start
+ 			[(hl+el)*10, (bd-ed)*10],
+ 			[(hl+el)*10, bd*10],
+ 			[(hl+el)*10, (bd-ed)*10],
+ 			[(ejecAngle+hl+el)*10, 2], // might be wrong
+ 			[(ejecAngle+hl+el)*10, bd*10]
  		];
 }
 
-function rimAngle(hl,rl,ra) {
+
+function calcRimAngle(hl,rl,ra) {
+	// console.log('ra: ', (hl-rl)/(Math.tan(ra)));
 	return (hl-rl)/(Math.tan(ra));
 }
 
+function calcEjecAngle(bd, ed, ea) {
+	let foo = (bd-ed)/(Math.tan(ea));
+	console.log(foo);
+	return foo;
+}
+
 let data = buildCartridge(diameters,lengths, angles);
-
-// let data = [
-//             [0, 20], 
-//             [0, 80], 
-//             [200, 40], 
-//             [300, 60], 
-//             [400, 30]
-//             ];
-
-console.log(data);
 
 let round = d3.select('.cartridge')
 			  .append('svg')
