@@ -1,18 +1,17 @@
-let height = 1000,
-	width = 1000;
-
 let hD = '10.01-0.25',
 	hL = '1.27-0.25';
 
 let rA = '35+20',
 	rL = '0.89-0.25';
 
-let eA = '35',
+let eA = '35-10',
 	eL = '0.89-0.25',
 	eD = '8.81-0.51';
 
-let bD = '9.931';
-let bL = '5.08'
+let bD = '9.931',
+	bL = '5.08';
+
+let bodyLength = '12.70';
 
 let sD = '9.680';
 
@@ -22,7 +21,7 @@ let cL = '19.15-0.25';
 
 let diameters = [hD, eD, bD, sD, nD];
 
-let lengths = [hL, rL, eL, cL];
+let lengths = [hL, rL, eL, cL, bodyLength];
 
 let angles = [rA, eA];
 
@@ -49,34 +48,38 @@ function parseAngle (ang) {
 
 function buildCartridge(d,l,a) {
 	[hD, eD, bD, sD, nD] = d.map(parseLength).map((i)=> i/2);
-	[hL, rL, eL, cL] = l.map(parseLength);
+	[hL, rL, eL, cL, bodyLength] = l.map(parseLength);
 	[rA, eA] = a.map(parseLength).map(parseAngle);
 
-	return buildHead(hL,hD,rL,rA,eD,eL,bD,eA);
+	return buildHead(hL,hD,rL,rA,eD,eL,bD,eA,bodyLength,sD, cL, nD);
 }
 
-function buildHead(hl,hd,rl,ra,ed,el,bd,ea) {
+function buildHead(hl,hd,rl,ra,ed,el,bd,ea, bodylength, sD, cL, nD) {
 
 	let rimAngle = calcRimAngle(hl, rl, ra);
 	let ejecAngle = calcEjecAngle(bd, ed, ea);
 
  return [
- 			[2, bd*10], // rim start
- 			[2, rimAngle*10],
- 			[(hl-rl)*10,2],
- 			[(hl-rl)*10,bd*10],
- 			[(hl-rl)*10,2],
- 			[hl*10,2],
- 			[hl*10, bd*10],
- 			[hl*10, (bd-ed)*10], // extractor start
- 			[(hl+el)*10, (bd-ed)*10],
- 			[(hl+el)*10, bd*10],
- 			[(hl+el)*10, (bd-ed)*10],
- 			[(ejecAngle+hl+el)*10, 2], // might be wrong
- 			[(ejecAngle+hl+el)*10, bd*10]
+ 			[0, bd], // rim start
+ 			[0, rimAngle],
+ 			[hl-rl,0],
+ 			[hl-rl,bd],
+ 			[hl-rl,0],
+ 			[hl,0],
+ 			[hl, bd],
+ 			[hl, bd-ed], // extractor start
+ 			[hl+el, bd-ed],
+ 			[hl+el, bd],
+ 			[hl+el, bd-ed],
+ 			[ejecAngle+hl+el, 0], // might be wrong
+ 			[ejecAngle+hl+el, bd],
+ 			[ejecAngle+hl+el, 0], // body start
+ 			[bodylength, bd-sD],
+ 			[cL, bd-nD],
+ 			[cL , bd],
+ 			[cL , bd-nD] // bullet start
  		];
 }
-
 
 function calcRimAngle(hl,rl,ra) {
 	// console.log('ra: ', (hl-rl)/(Math.tan(ra)));
@@ -93,15 +96,16 @@ let data = buildCartridge(diameters,lengths, angles);
 
 let round = d3.select('.cartridge')
 			  .append('svg')
-			  .attr('height', height)
-			  .attr('width', width)
+			  .attr('height',  "100%")
+			  .attr('width', "100%")
 			  .append('path')
-			  .attr('class', 'round1');
+			  .attr('class', 'round1')
+			  .attr("transform","scale(10)");
 
 let round2 = d3.select('svg')
 			  .append('path')
 			  .attr('class', 'round2')
-			  .attr("transform","translate(0 "+ hD*20 +") scale(1 -1)");
+			  .attr("transform","translate(0 "+ hD*20 +") scale(10 -10)");
 
 let lineGenerator = d3.line();
 let pathString = lineGenerator(data);
