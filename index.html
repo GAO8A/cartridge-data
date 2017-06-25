@@ -6,7 +6,7 @@
 </head>
 <style>
 	svg{
-		padding: 1px;
+		padding: 0.1px;
 	}
 	path {
 	fill: none;
@@ -14,10 +14,21 @@
   	stroke-width: 0.1;
   	clip-path: none;
 	}
+	.bar{
+		width: 300px;
+		height: 300px;
+	}
 	.cartridge {
-		padding: 100px;
-		width: 1000px;
-		height: 1000px;
+		display: inline-block;
+		float: left;
+		/*width: 500px;
+		height: 500px;*/
+	}
+	.bullet {
+		display: inline-block;
+		float: left;
+		/*width: 500px;
+		height: 500px;*/
 	}
 </style>
 
@@ -27,7 +38,11 @@
 <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 <body>
 
-<div class="cartridge"></div>
+<div class="bar">
+<div class="cartridge">
+</div>
+<div class="bullet"></div>
+<bar>
 	
 </body>
 <script src="app.js"></script>
